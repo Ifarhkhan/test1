@@ -17,6 +17,8 @@ function App() {
       <div className="p-4">
         <Routes>
           <Route path="/" element={<Home />} />
+
+          
           <Route path="/tutors" element={<Tutors />} />
           <Route path="/tutor/:id" element={<TutorProfile />} />
           <Route path="/create-profile" element={<CreateProfile />} />

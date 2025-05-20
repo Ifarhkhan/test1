@@ -1,18 +1,25 @@
-
 // src/pages/Home.js
 
-
-import React from "react";
-
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaChalkboardTeacher, FaUserGraduate, FaQuoteLeft } from "react-icons/fa";
 
 const Home = () => {
-  const sampleTutors = [
-    { name: "Ayesha Khan", subject: "Mathematics" },
-    { name: "Ali Raza", subject: "Physics" },
-    { name: "Sana Ahmed", subject: "English" },
-  ];
+  const [tutors, setTutors] = useState([]);
+
+  useEffect(() => {
+    const fetchTutors = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/tutors");
+        const data = await res.json();
+        setTutors(data);
+      } catch (err) {
+        console.error("Failed to fetch tutors:", err);
+      }
+    };
+
+    fetchTutors();
+  }, []);
 
   const testimonials = [
     {
@@ -55,18 +62,22 @@ const Home = () => {
       <section className="mb-16">
         <h2 className="text-3xl font-bold text-blue-800 mb-6 text-center">Featured Tutors</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {sampleTutors.map((tutor, index) => (
-            <div key={index} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
-              <h3 className="text-xl font-semibold text-purple-700">{tutor.name}</h3>
-              <p className="text-gray-600">{tutor.subject}</p>
-              <Link
-                to="/tutors"
-                className="text-blue-600 text-sm mt-4 inline-block hover:underline"
-              >
-                View Profile →
-              </Link>
-            </div>
-          ))}
+          {tutors.length === 0 ? (
+            <p className="text-center text-gray-500 col-span-3">Loading tutors...</p>
+          ) : (
+            tutors.map((tutor, index) => (
+              <div key={index} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
+                <h3 className="text-xl font-semibold text-purple-700">{tutor.name}</h3>
+                <p className="text-gray-600">{(tutor.subjects || []).join(', ')}</p>
+                <Link
+                  to={`/tutors/${tutor.user_id}`}
+                  className="text-blue-600 text-sm mt-4 inline-block hover:underline"
+                >
+                  View Profile →
+                </Link>
+              </div>
+            ))
+          )}
         </div>
       </section>
 
@@ -88,4 +99,3 @@ const Home = () => {
 };
 
 export default Home;
-

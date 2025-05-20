@@ -222,10 +222,19 @@
 
 
 // src/pages/Booksession.js
-import React, { useState } from "react";
+// src/pages/BookSession.js
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { bookSession } from "../api/api";
+import { useMemo } from "react";
+
 
 const BookSession = () => {
+  const location = useLocation();
+  const tutor = useMemo(() => {
+  return location.state?.tutor || {};
+}, [location.state]);
+
   const [data, setData] = useState({
     tutorName: "",
     studentName: "",
@@ -233,6 +242,16 @@ const BookSession = () => {
     date: "",
     time: "",
   });
+
+  // 🧠 Prefill tutor name from passed state
+  useEffect(() => {
+    if (tutor?.name) {
+      setData((prevData) => ({
+        ...prevData,
+        tutorName: tutor.name,
+      }));
+    }
+  }, [tutor]);
 
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
@@ -253,7 +272,7 @@ const BookSession = () => {
       await bookSession(data);
       alert("Session booked successfully!");
       setData({
-        tutorName: "",
+        tutorName: tutor.name || "",
         studentName: "",
         email: "",
         date: "",
@@ -282,6 +301,7 @@ const BookSession = () => {
               onChange={handleChange}
               className="w-full p-3 border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
               required
+              readOnly // 🔒 so user can’t change it
             />
             <input
               type="text"
@@ -334,3 +354,4 @@ const BookSession = () => {
 };
 
 export default BookSession;
+
